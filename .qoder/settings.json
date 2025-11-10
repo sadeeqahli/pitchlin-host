@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "ask": [
+      "Read(!/Users/macbookair/Downloads/pitchlink/**)",
+      "Edit(!/Users/macbookair/Downloads/pitchlink/**)"
+    ],
+    "allow": [
+      "Read(/Users/macbookair/Downloads/pitchlink/**)",
+      "Edit(/Users/macbookair/Downloads/pitchlink/**)"
+    ]
+  },
+  "memoryImport": {},
+  "monitoring": {}
+}
