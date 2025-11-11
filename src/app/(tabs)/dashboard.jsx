@@ -36,7 +36,8 @@ export default function Dashboard() {
   const isDark = colorScheme === "dark";
   const [refreshing, setRefreshing] = useState(false);
 
-  const { todayStats, recentActivity, pitches, bookings } = usePitchStore();
+  const { todayStats, recentActivity, pitches, bookings, getRevenueStats } = usePitchStore();
+  const revenueStats = getRevenueStats();
 
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -120,9 +121,203 @@ export default function Dashboard() {
     </View>
   );
 
+  const RevenueCard = ({
+    title,
+    amount,
+    subtitle,
+    color,
+    icon: IconComponent,
+  }) => (
+    <View
+      style={{
+        backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
+        borderRadius: 16,
+        padding: 20,
+        marginHorizontal: 16,
+        shadowColor: isDark ? "#000" : "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3,
+        marginBottom: 24,
+      }}
+    >
+      <View
+        style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}
+      >
+        <View
+          style={{
+            width: 40,
+            height: 40,
+            backgroundColor: color,
+            borderRadius: 20,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <IconComponent size={20} color="#FFFFFF" />
+        </View>
+      </View>
+      <Text
+        style={{
+          fontFamily: "Inter_700Bold",
+          fontSize: 28,
+          color: isDark ? "#FFFFFF" : "#000000",
+          marginBottom: 4,
+        }}
+      >
+        ₦{amount}
+      </Text>
+      <Text
+        style={{
+          fontFamily: "Inter_500Medium",
+          fontSize: 12,
+          color: isDark ? "#9CA3AF" : "#6B7280",
+          marginBottom: 2,
+        }}
+      >
+        {title}
+      </Text>
+      {subtitle && (
+        <Text
+          style={{
+            fontFamily: "Inter_400Regular",
+            fontSize: 10,
+            color: isDark ? "#6B7280" : "#9CA3AF",
+          }}
+        >
+          {subtitle}
+        </Text>
+      )}
+    </View>
+  );
+
+  const PaymentCard = ({ payment }) => (
+    <TouchableOpacity
+      style={{
+        backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 12,
+        shadowColor: isDark ? "#000" : "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3,
+      }}
+      onPress={() => router.push(`/bookings/receipt/${payment.bookingId}`)}
+    >
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: 12,
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <Text
+            style={{
+              fontFamily: "Inter_600SemiBold",
+              fontSize: 16,
+              color: isDark ? "#FFFFFF" : "#000000",
+              marginBottom: 4,
+            }}
+          >
+            Pitch Booking
+          </Text>
+          <Text
+            style={{
+              fontFamily: "Inter_400Regular",
+              fontSize: 14,
+              color: isDark ? "#9CA3AF" : "#6B7280",
+            }}
+          >
+            Booking #{payment.bookingId}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "#00FF8820",
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+            borderRadius: 12,
+          }}
+        >
+          <DollarSign size={16} color="#00FF88" />
+          <Text
+            style={{
+              fontFamily: "Inter_500Medium",
+              fontSize: 12,
+              color: "#00FF88",
+              marginLeft: 4,
+            }}
+          >
+            Paid
+          </Text>
+        </View>
+      </View>
+
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 12,
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <DollarSign size={18} color={isDark ? "#00FF88" : "#00FF88"} />
+          <Text
+            style={{
+              fontFamily: "Inter_700Bold",
+              fontSize: 20,
+              color: isDark ? "#FFFFFF" : "#000000",
+              marginLeft: 4,
+            }}
+          >
+            ₦{payment.amount}
+          </Text>
+        </View>
+
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Clock size={16} color={isDark ? "#9CA3AF" : "#6B7280"} />
+          <Text
+            style={{
+              fontFamily: "Inter_500Medium",
+              fontSize: 12,
+              color: isDark ? "#9CA3AF" : "#6B7280",
+              marginLeft: 4,
+            }}
+          >
+            {new Date(payment.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </Text>
+        </View>
+      </View>
+
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Calendar size={14} color={isDark ? "#9CA3AF" : "#6B7280"} />
+        <Text
+          style={{
+            fontFamily: "Inter_400Regular",
+            fontSize: 12,
+            color: isDark ? "#9CA3AF" : "#6B7280",
+            marginLeft: 4,
+          }}
+        >
+          {new Date(payment.date).toLocaleDateString()}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   const QuickActionButton = ({
     icon: IconComponent,
     title,
+    subtitle,
     onPress,
     color,
   }) => (
@@ -130,7 +325,7 @@ export default function Dashboard() {
       style={{
         backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
         borderRadius: 16,
-        padding: 20,
+        padding: 25,
         flex: 1,
         marginHorizontal: 4,
         alignItems: "center",
@@ -162,62 +357,24 @@ export default function Dashboard() {
           fontSize: 14,
           color: isDark ? "#FFFFFF" : "#000000",
           textAlign: "center",
+          marginBottom: 4,
         }}
       >
         {title}
       </Text>
-    </TouchableOpacity>
-  );
-
-  const ActivityItem = ({ item }) => (
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        paddingVertical: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: isDark ? "#2C2C2C" : "#E5E7EB",
-      }}
-    >
-      <View
-        style={{
-          width: 40,
-          height: 40,
-          backgroundColor: item.type === "booking" ? "#00FF88" : "#3B82F6",
-          borderRadius: 20,
-          alignItems: "center",
-          justifyContent: "center",
-          marginRight: 12,
-        }}
-      >
-        {item.type === "booking" ? (
-          <Calendar size={20} color="#FFFFFF" />
-        ) : (
-          <DollarSign size={20} color="#FFFFFF" />
-        )}
-      </View>
-      <View style={{ flex: 1 }}>
-        <Text
-          style={{
-            fontFamily: "Inter_500Medium",
-            fontSize: 14,
-            color: isDark ? "#FFFFFF" : "#000000",
-            marginBottom: 2,
-          }}
-        >
-          {item.message}
-        </Text>
+      {subtitle && (
         <Text
           style={{
             fontFamily: "Inter_400Regular",
             fontSize: 12,
             color: isDark ? "#9CA3AF" : "#6B7280",
+            textAlign: "center",
           }}
         >
-          {item.time}
+          {subtitle}
         </Text>
-      </View>
-    </View>
+      )}
+    </TouchableOpacity>
   );
 
   return (
@@ -254,48 +411,41 @@ export default function Dashboard() {
         </View>
 
         {/* Today's Stats */}
-        <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
+        <View style={{ marginBottom: 24 }}>
           <Text
             style={{
               fontFamily: "Inter_600SemiBold",
               fontSize: 20,
               color: isDark ? "#FFFFFF" : "#000000",
               marginBottom: 16,
-              paddingHorizontal: 4,
+              paddingHorizontal: 20,
             }}
           >
             Today's Overview
           </Text>
-          <View style={{ flexDirection: "row", marginHorizontal: -4 }}>
-            <StatCard
-              icon={DollarSign}
-              label="Revenue"
-              value={`£${todayStats.revenue}`}
-              change="+12%"
-              color="#00FF88"
-            />
+          
+          {/* Revenue Card - matches payments page */}
+          <RevenueCard
+            title="Total Revenue"
+            amount={revenueStats.today}
+            subtitle="Today's earnings"
+            color="#00FF88"
+            icon={DollarSign}
+          />
+          
+          {/* Stats Cards - 2 in a row */}
+          <View style={{ flexDirection: "row", paddingHorizontal: 16, marginHorizontal: -4 }}>
             <StatCard
               icon={Calendar}
-              label="Bookings"
-              value={todayStats.bookings.toString()}
-              change="+3"
+              label="Pending Bookings"
+              value={bookings.filter(b => b.status === "pending").length.toString()}
               color="#3B82F6"
             />
-          </View>
-          <View
-            style={{ flexDirection: "row", marginHorizontal: -4, marginTop: 8 }}
-          >
             <StatCard
               icon={Clock}
-              label="Active Hours"
-              value={`${todayStats.activeHours}h`}
+              label="Upcoming Bookings"
+              value={bookings.filter(b => new Date(b.date) > new Date()).length.toString()}
               color="#F59E0B"
-            />
-            <StatCard
-              icon={TrendingUp}
-              label="Utilization"
-              value={`${todayStats.utilization}%`}
-              color="#EF4444"
             />
           </View>
         </View>
@@ -317,19 +467,21 @@ export default function Dashboard() {
             <QuickActionButton
               icon={Plus}
               title="Add Booking"
-              onPress={() => router.push("/(tabs)/bookings")}
+              subtitle="Manual Booking"
+              onPress={() => router.push("/bookings/create")}
               color="#00FF88"
+            />
+            <QuickActionButton
+              icon={Calendar}
+              title="View Calendar"
+              subtitle="Check Schedule"
+              onPress={() => router.push("/(tabs)/bookings")}
+              color="#3B82F6"
             />
             <QuickActionButton
               icon={Building2}
               title="Manage Pitches"
               onPress={() => router.push("/(tabs)/pitches")}
-              color="#3B82F6"
-            />
-            <QuickActionButton
-              icon={Users}
-              title="View Customers"
-              onPress={() => router.push("/(tabs)/customers")}
               color="#8B5CF6"
             />
           </View>
@@ -345,40 +497,41 @@ export default function Dashboard() {
               marginBottom: 16,
             }}
           >
-            Recent Activity
+            Recent Receipts
           </Text>
-          <View
-            style={{
-              backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
-              borderRadius: 16,
-              padding: 20,
-              shadowColor: isDark ? "#000" : "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 3,
-            }}
-          >
-            {recentActivity.length > 0 ? (
-              recentActivity.map((item) => (
-                <ActivityItem key={item.id} item={item} />
-              ))
-            ) : (
-              <View style={{ alignItems: "center", paddingVertical: 24 }}>
-                <Activity size={40} color={isDark ? "#6B7280" : "#9CA3AF"} />
-                <Text
-                  style={{
-                    fontFamily: "Inter_500Medium",
-                    fontSize: 16,
-                    color: isDark ? "#6B7280" : "#9CA3AF",
-                    marginTop: 12,
-                  }}
-                >
-                  No recent activity
-                </Text>
-              </View>
-            )}
-          </View>
+
+          {recentActivity.length > 0 ? (
+            recentActivity.map((item) => (
+              <PaymentCard key={item.id} payment={item} />
+            ))
+          ) : (
+            <View
+              style={{
+                backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
+                borderRadius: 16,
+                padding: 20,
+                shadowColor: isDark ? "#000" : "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 8,
+                elevation: 3,
+                alignItems: "center",
+                paddingVertical: 24,
+              }}
+            >
+              <DollarSign size={40} color={isDark ? "#6B7280" : "#9CA3AF"} />
+              <Text
+                style={{
+                  fontFamily: "Inter_500Medium",
+                  fontSize: 16,
+                  color: isDark ? "#6B7280" : "#9CA3AF",
+                  marginTop: 12,
+                }}
+              >
+                No recent receipts
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
     </ScreenLayout>
