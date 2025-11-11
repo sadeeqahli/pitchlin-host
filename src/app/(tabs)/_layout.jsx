@@ -3,7 +3,6 @@ import {
   Home,
   Building2,
   Calendar,
-  Users,
   CreditCard,
   User,
 } from "lucide-react-native";
@@ -58,13 +57,6 @@ export default function TabLayout() {
         options={{
           title: "Bookings",
           tabBarIcon: ({ color }) => <Calendar size={24} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="customers"
-        options={{
-          title: "Customers",
-          tabBarIcon: ({ color }) => <Users size={24} color={color} />,
         }}
       />
       <Tabs.Screen

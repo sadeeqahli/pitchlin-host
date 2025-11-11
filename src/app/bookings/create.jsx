@@ -229,7 +229,7 @@ export default function CreateBooking() {
                     color: isDark ? "#9CA3AF" : "#6B7280",
                   }}
                 >
-                  £{selectedPitch.hourlyRate}/hr
+                  ₦{selectedPitch.hourlyRate}/hr
                 </Text>
               </View>
             ) : (

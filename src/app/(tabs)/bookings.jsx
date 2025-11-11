@@ -278,7 +278,7 @@ export default function Bookings() {
               marginLeft: 4,
             }}
           >
-            £{booking.amount}
+            ₦{booking.amount}
           </Text>
         </View>
 

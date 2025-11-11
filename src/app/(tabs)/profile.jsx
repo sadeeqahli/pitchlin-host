@@ -382,7 +382,7 @@ export default function Profile() {
             >
               <StatsCard
                 label="Total Revenue"
-                value={`£${totalRevenue}`}
+                value={`₦${totalRevenue}`}
                 icon={Building2}
                 color="#00FF88"
               />

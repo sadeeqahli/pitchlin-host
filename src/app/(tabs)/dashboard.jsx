@@ -270,7 +270,7 @@ export default function Dashboard() {
             <StatCard
               icon={DollarSign}
               label="Revenue"
-              value={`£${todayStats.revenue}`}
+              value={`₦${todayStats.revenue}`}
               change="+12%"
               color="#00FF88"
             />
@@ -329,7 +329,7 @@ export default function Dashboard() {
             <QuickActionButton
               icon={Users}
               title="View Customers"
-              onPress={() => router.push("/(tabs)/customers")}
+              onPress={() => router.push("/(tabs)/payments")}
               color="#8B5CF6"
             />
           </View>
