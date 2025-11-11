@@ -148,7 +148,7 @@ export default function Payments() {
           marginBottom: 4,
         }}
       >
-        £{amount}
+        ₦{amount}
       </Text>
       <Text
         style={{
@@ -287,7 +287,7 @@ export default function Payments() {
               marginLeft: 4,
             }}
           >
-            £{payment.amount}
+            ₦{payment.amount}
           </Text>
         </View>
 
@@ -596,7 +596,7 @@ export default function Payments() {
                   color: isDark ? "#FFFFFF" : "#000000",
                 }}
               >
-                £
+                ₦
                 {payments.length > 0
                   ? Math.round(
                       totalRevenue /

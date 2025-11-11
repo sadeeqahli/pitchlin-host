@@ -48,7 +48,8 @@
 				}
 			],
 			"expo-video",
-			"expo-apple-authentication"
+			"expo-apple-authentication",
+			"expo-dev-client"
 		],
 		"web": {
 			"bundler": "metro",

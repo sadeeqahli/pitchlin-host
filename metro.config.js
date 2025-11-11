@@ -42,7 +42,7 @@ const WEB_ALIASES = {
 const NATIVE_ALIASES = {
   './Libraries/Components/TextInput/TextInput': path.resolve(
     __dirname,
-    './polyfills/native/texinput.native.jsx'
+    './polyfills/native/textInput.native.jsx'
   ),
 };
 const SHARED_ALIASES = {

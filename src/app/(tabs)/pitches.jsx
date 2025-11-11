@@ -195,7 +195,7 @@ export default function Pitches() {
                   marginLeft: 4,
                 }}
               >
-                £{pitch.hourlyRate}/hour
+                ₦{pitch.hourlyRate}/hour
               </Text>
             </View>
           </View>
@@ -210,7 +210,7 @@ export default function Pitches() {
                 color: isDark ? "#9CA3AF" : "#6B7280",
               }}
             >
-              {pitch.location} • £{pitch.hourlyRate}/hour
+              {pitch.location} • ₦{pitch.hourlyRate}/hour
             </Text>
           </View>
         )}
@@ -463,7 +463,7 @@ export default function Pitches() {
           shadowRadius: 8,
           elevation: 8,
         }}
-        onPress={() => console.log("Add new pitch")}
+        onPress={() => router.push("/bookings/create")}
         activeOpacity={0.8}
       >
         <Plus size={24} color="#FFFFFF" />
