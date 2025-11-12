@@ -423,7 +423,6 @@ export default function Dashboard() {
           >
             Today's Overview
           </Text>
-<<<<<<< HEAD
           
           {/* Revenue Card - matches payments page */}
           <RevenueCard
@@ -436,16 +435,6 @@ export default function Dashboard() {
           
           {/* Stats Cards - 2 in a row */}
           <View style={{ flexDirection: "row", paddingHorizontal: 16, marginHorizontal: -4 }}>
-=======
-          <View style={{ flexDirection: "row", marginHorizontal: -4 }}>
-            <StatCard
-              icon={DollarSign}
-              label="Revenue"
-              value={`₦${todayStats.revenue}`}
-              change="+12%"
-              color="#00FF88"
-            />
->>>>>>> 86fca3a5f7ab2e1e6c5ae4f5de503db9b9f2f260
             <StatCard
               icon={Calendar}
               label="Pending Bookings"
@@ -493,15 +482,6 @@ export default function Dashboard() {
               icon={Building2}
               title="Manage Pitches"
               onPress={() => router.push("/(tabs)/pitches")}
-<<<<<<< HEAD
-=======
-              color="#3B82F6"
-            />
-            <QuickActionButton
-              icon={Users}
-              title="View Customers"
-              onPress={() => router.push("/(tabs)/payments")}
->>>>>>> 86fca3a5f7ab2e1e6c5ae4f5de503db9b9f2f260
               color="#8B5CF6"
             />
           </View>

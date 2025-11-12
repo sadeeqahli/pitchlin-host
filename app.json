@@ -1,11 +1,13 @@
 {
 	"expo": {
-    "name": "pitchlink-host",
+    "name": "PitchLink",
+    "slug": "pitchlink",
 		"version": "1.0.0",
 		"orientation": "portrait",
 		"icon": "./assets/images/icon.png",
 		"userInterfaceStyle": "automatic",
 		"newArchEnabled": true,
+    "scheme": "pitchlink",
 		"ios": {
 			"supportsTablet": true,
 			"infoPlist": {
@@ -21,7 +23,7 @@
 				"android.permission.RECORD_AUDIO",
 				"android.permission.MODIFY_AUDIO_SETTINGS"
 			],
-			"package": "xyz.create.CreateExpoEnvironment"
+			"package": "com.pitchlink.app"
 		},
 		"plugins": [
 			[

@@ -57,7 +57,12 @@ export function SharedErrorBoundary({
           maxWidth: 448,
           width: '100%',
           marginHorizontal: 16,
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
+          // Removed boxShadow for mobile compatibility
+          elevation: 3, // Android shadow
+          shadowColor: '#000', // iOS shadow
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
         }}
       >
         <View style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
@@ -82,7 +87,7 @@ export function SharedErrorBoundary({
                 App Error Detected
               </Text>
               <Text style={{ color: '#959697', fontSize: 14, fontWeight: '300' }}>
-                {description ?? 'It looks like an error occurred while trying to use your app.'}
+                {description ?? 'An unexpected error occurred in the app.'}
               </Text>
             </View>
             {children}
@@ -129,21 +134,10 @@ function InternalErrorBoundary({
 }) {
   const [isOpen, setIsOpen] = useState(true);
   const handleShowLogsClick = useCallback(() => {
-    window.parent.postMessage(
-      {
-        type: 'sandbox:web:show-logs',
-      },
-      '*'
-    );
+    // Removed sandbox postMessage for standalone app
   }, []);
   const handleFixClick = useCallback(() => {
-    window.parent.postMessage(
-      {
-        type: 'sandbox:web:fix',
-        error: serializeError(errorArg),
-      },
-      '*'
-    );
+    // Removed sandbox postMessage for standalone app
     setIsOpen(false);
   }, [errorArg]);
   const handleCopyError = useCallback(() => {
@@ -151,34 +145,25 @@ function InternalErrorBoundary({
     const text = isErrorLike(serializedError)
       ? `${serializedError.message}\n\n${serializedError.stack}`
       : JSON.stringify(serializedError, null, 2);
-    navigator.clipboard.writeText(text);
+    // Safely handle clipboard API
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(() => {
+        // Silently ignore clipboard errors
+      });
+    }
     setIsOpen(false);
   }, [errorArg]);
 
   function isInIframe() {
-    try {
-      return window.parent !== window;
-    } catch {
-      return true;
-    }
+    // Always return false for standalone app
+    return false;
   }
   return (
     <SharedErrorBoundary isOpen={isOpen}>
       <View style={{ flexDirection: 'row', gap: 8 }}>
-        {isInIframe() ? (
-          <>
-            <Button color="primary" onPress={handleFixClick}>
-              Try to fix
-            </Button>
-            <Button color="secondary" onPress={handleShowLogsClick}>
-              Show logs
-            </Button>
-          </>
-        ) : (
-          <Button color="primary" onPress={handleCopyError}>
-            Copy error
-          </Button>
-        )}
+        <Button color="primary" onPress={handleCopyError}>
+          Copy error details
+        </Button>
       </View>
     </SharedErrorBoundary>
   );

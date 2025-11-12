@@ -1,7 +1,11 @@
 import * as SecureStore from 'expo-secure-store';
 import { fetch as expoFetch } from 'expo/fetch';
 
+// Simplified fetch polyfill for standalone app
 const originalFetch = fetch;
+
+export default originalFetch;
+
 const authKey = `${process.env.EXPO_PUBLIC_PROJECT_GROUP_ID}-jwt`;
 
 const getURLFromArgs = (...args: Parameters<typeof fetch>) => {
@@ -88,5 +92,3 @@ const fetchToWeb = async function fetchWithHeaders(...args: Params) {
     headers: finalHeaders,
   });
 };
-
-export default fetchToWeb;

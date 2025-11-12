@@ -36,12 +36,7 @@ function NotFoundScreen() {
         }
       };
 
-      window.parent.postMessage(
-        {
-          type: 'sandbox:sitemap',
-        },
-        '*'
-      );
+      // Removed sandbox postMessage for standalone app
       window.addEventListener('message', handler);
 
       return () => {
@@ -98,16 +93,7 @@ function NotFoundScreen() {
   };
 
   const handleCreatePage = useCallback(() => {
-    if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
-      window.parent.postMessage(
-        {
-          type: 'sandbox:web:create',
-          path: missingPath,
-          view: 'mobile',
-        },
-        '*'
-      );
-    }
+    // Removed sandbox postMessage for standalone app
   }, [missingPath]);
   return (
     <>
@@ -138,26 +124,7 @@ function NotFoundScreen() {
               project. But no worries, you've got options!
             </Text>
 
-            {typeof window !== 'undefined' && window.parent && window.parent !== window && (
-              <View style={styles.createPageContainer}>
-                <View style={styles.createPageContent}>
-                  <View style={styles.createPageTextContainer}>
-                    <Text style={styles.createPageTitle}>Build it from scratch</Text>
-                    <Text style={styles.createPageDescription}>
-                      Create a new screen to live at "/{missingPath}"
-                    </Text>
-                  </View>
-                  <View style={styles.createPageButtonContainer}>
-                    <TouchableOpacity
-                      onPress={() => handleCreatePage()}
-                      style={styles.createPageButton}
-                    >
-                      <Text style={styles.createPageButtonText}>Create Screen</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            )}
+            {/* Removed web builder UI for standalone app */}
 
             <Text style={styles.routesLabel}>Check out all your project's routes here ↓</Text>
             {!isExpoSitemap && sitemap ? (

@@ -145,4 +145,25 @@ export const usePitchStore = create((set, get) => ({
         ...state.recentActivity.slice(0, 9),
       ],
     })),
+
+  // Add the missing getRevenueStats function
+  getRevenueStats: () => {
+    const { payments } = get();
+    const today = new Date().toISOString().split("T")[0];
+    
+    // Calculate today's revenue
+    const todayRevenue = payments
+      .filter(payment => payment.date === today && payment.status === "completed")
+      .reduce((sum, payment) => sum + payment.amount, 0);
+    
+    // Calculate total revenue
+    const totalRevenue = payments
+      .filter(payment => payment.status === "completed")
+      .reduce((sum, payment) => sum + payment.amount, 0);
+    
+    return {
+      today: todayRevenue,
+      total: totalRevenue
+    };
+  },
 }));

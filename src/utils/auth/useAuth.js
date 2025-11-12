@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 import { create } from 'zustand';
 import { Modal, View } from 'react-native';
 import { useAuthModal, useAuthStore, authKey } from './store';
@@ -17,12 +17,22 @@ export const useAuth = () => {
   const { isOpen, close, open } = useAuthModal();
 
   const initiate = useCallback(() => {
-    SecureStore.getItemAsync(authKey).then((auth) => {
-      useAuthStore.setState({
-        auth: auth ? JSON.parse(auth) : null,
-        isReady: true,
+    // Add error handling to ensure the app doesn't get stuck
+    SecureStore.getItemAsync(authKey)
+      .then((auth) => {
+        useAuthStore.setState({
+          auth: auth ? JSON.parse(auth) : null,
+          isReady: true,
+        });
+      })
+      .catch((error) => {
+        console.warn('Error initializing auth:', error);
+        // Set isReady to true even if there's an error to prevent app from getting stuck
+        useAuthStore.setState({
+          auth: null,
+          isReady: true,
+        });
       });
-    });
   }, []);
 
   useEffect(() => {}, []);
