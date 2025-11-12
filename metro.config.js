@@ -109,7 +109,8 @@ config.reporter = {
     for (const errorType of reportableErrors) {
       if (event.type === errorType) {
         reportErrorToRemote({ error: event.error }).catch((reportError) => {
-          // no-op
+          // Silently ignore reporting errors in development
+          // These are typically due to missing environment variables
         });
       }
     }
