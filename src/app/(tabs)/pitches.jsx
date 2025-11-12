@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   useColorScheme,
   Alert,
+  Image,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -20,6 +21,7 @@ import {
   Circle,
   CheckCircle,
   Clock,
+  BarChart3,
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import {
@@ -86,16 +88,12 @@ export default function Pitches() {
   };
 
   const handleToggleStatus = (pitch) => {
-    const statusCycle = {
-      available: "booked",
-      booked: "maintenance",
-      maintenance: "available",
-    };
-    updatePitch(pitch.id, { status: statusCycle[pitch.status] });
+    const newStatus = pitch.status === "available" ? "inactive" : "available";
+    updatePitch(pitch.id, { status: newStatus });
   };
 
-  const PitchCard = ({ pitch, compact = false }) => (
-    <TouchableOpacity
+  const PitchCard = ({ pitch }) => (
+    <View
       style={{
         backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
         borderRadius: 16,
@@ -106,211 +104,154 @@ export default function Pitches() {
         shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 3,
-        flexDirection: compact ? "row" : "column",
       }}
-      activeOpacity={0.7}
-      onPress={() => router.push(`/bookings/create?pitchId=${pitch.id}`)}
     >
-      {/* Status Indicator */}
+      {/* Pitch Image Placeholder */}
       <View
         style={{
-          position: "absolute",
-          top: 12,
-          right: 12,
-          flexDirection: "row",
-          alignItems: "center",
+          height: 120,
           backgroundColor: isDark ? "#2C2C2C" : "#F3F4F6",
-          paddingHorizontal: 8,
-          paddingVertical: 4,
           borderRadius: 12,
+          marginBottom: 12,
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        {getStatusIcon(pitch.status)}
-        <Text
-          style={{
-            fontFamily: "Inter_500Medium",
-            fontSize: 12,
-            color: getStatusColor(pitch.status),
-            marginLeft: 4,
-            textTransform: "capitalize",
-          }}
-        >
-          {pitch.status}
-        </Text>
+        <Building2 size={40} color={isDark ? "#6B7280" : "#9CA3AF"} />
       </View>
 
-      <View style={{ flex: 1 }}>
-        <View style={{ marginBottom: compact ? 0 : 12 }}>
-          <Text
-            style={{
-              fontFamily: "Inter_600SemiBold",
-              fontSize: compact ? 16 : 18,
-              color: isDark ? "#FFFFFF" : "#000000",
-              marginBottom: 4,
-              paddingRight: 80,
-            }}
-          >
-            {pitch.name}
-          </Text>
+      {/* Pitch Details */}
+      <View style={{ marginBottom: 12 }}>
+        <Text
+          style={{
+            fontFamily: "Inter_600SemiBold",
+            fontSize: 18,
+            color: isDark ? "#FFFFFF" : "#000000",
+            marginBottom: 4,
+          }}
+        >
+          {pitch.name}
+        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 4 }}>
+          <MapPin size={14} color={isDark ? "#9CA3AF" : "#6B7280"} />
           <Text
             style={{
               fontFamily: "Inter_400Regular",
               fontSize: 14,
               color: isDark ? "#9CA3AF" : "#6B7280",
-              marginBottom: compact ? 4 : 8,
+              marginLeft: 4,
             }}
           >
-            {pitch.type}
+            {pitch.location}
           </Text>
         </View>
-
-        {!compact && (
-          <View style={{ marginBottom: 12 }}>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginBottom: 4,
-              }}
-            >
-              <MapPin size={14} color={isDark ? "#9CA3AF" : "#6B7280"} />
-              <Text
-                style={{
-                  fontFamily: "Inter_400Regular",
-                  fontSize: 12,
-                  color: isDark ? "#9CA3AF" : "#6B7280",
-                  marginLeft: 4,
-                }}
-              >
-                {pitch.location}
-              </Text>
-            </View>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <DollarSign size={14} color={isDark ? "#9CA3AF" : "#6B7280"} />
-              <Text
-                style={{
-                  fontFamily: "Inter_500Medium",
-                  fontSize: 12,
-                  color: isDark ? "#9CA3AF" : "#6B7280",
-                  marginLeft: 4,
-                }}
-              >
-                ₦{pitch.hourlyRate}/hour
-              </Text>
-            </View>
-          </View>
-        )}
-
-        {compact && (
-          <View>
-            <Text
-              style={{
-                fontFamily: "Inter_400Regular",
-                fontSize: 12,
-                color: isDark ? "#9CA3AF" : "#6B7280",
-              }}
-            >
-              {pitch.location} • ₦{pitch.hourlyRate}/hour
-            </Text>
-          </View>
-        )}
-
-        {/* Facilities */}
-        {!compact && (
-          <View
-            style={{ flexDirection: "row", flexWrap: "wrap", marginBottom: 16 }}
-          >
-            {pitch.facilities.map((facility, index) => (
-              <View
-                key={index}
-                style={{
-                  backgroundColor: isDark ? "#2C2C2C" : "#F3F4F6",
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 8,
-                  marginRight: 8,
-                  marginBottom: 4,
-                }}
-              >
-                <Text
-                  style={{
-                    fontFamily: "Inter_400Regular",
-                    fontSize: 10,
-                    color: isDark ? "#9CA3AF" : "#6B7280",
-                  }}
-                >
-                  {facility}
-                </Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {/* Actions */}
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <TouchableOpacity
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <DollarSign size={14} color={isDark ? "#9CA3AF" : "#6B7280"} />
+          <Text
             style={{
-              flexDirection: "row",
-              alignItems: "center",
-              backgroundColor: "#00FF88",
-              paddingHorizontal: 12,
-              paddingVertical: 8,
-              borderRadius: 12,
-              flex: 1,
-              marginRight: 8,
-              justifyContent: "center",
+              fontFamily: "Inter_500Medium",
+              fontSize: 14,
+              color: isDark ? "#9CA3AF" : "#6B7280",
+              marginLeft: 4,
             }}
-            onPress={(e) => {
-              e.stopPropagation();
-              handleToggleStatus(pitch);
-            }}
-            activeOpacity={0.8}
           >
-            <Text
-              style={{
-                fontFamily: "Inter_500Medium",
-                fontSize: 12,
-                color: "#FFFFFF",
-              }}
-            >
-              Toggle Status
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{
-              backgroundColor: isDark ? "#2C2C2C" : "#F3F4F6",
-              padding: 8,
-              borderRadius: 12,
-              marginRight: 8,
-            }}
-            onPress={(e) => {
-              e.stopPropagation();
-              console.log("Edit pitch:", pitch.id);
-            }}
-            activeOpacity={0.8}
-          >
-            <Edit3 size={16} color={isDark ? "#FFFFFF" : "#000000"} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#EF4444",
-              padding: 8,
-              borderRadius: 12,
-            }}
-            onPress={(e) => {
-              e.stopPropagation();
-              handleDeletePitch(pitch.id, pitch.name);
-            }}
-            activeOpacity={0.8}
-          >
-            <Trash2 size={16} color="#FFFFFF" />
-          </TouchableOpacity>
+            ₦{pitch.hourlyRate}/hour
+          </Text>
         </View>
       </View>
-    </TouchableOpacity>
+
+      {/* Status Toggle */}
+      <View style={{ flexDirection: "row", marginBottom: 16 }}>
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: pitch.status === "available" ? "#00FF88" : isDark ? "#2C2C2C" : "#F3F4F6",
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            borderRadius: 12,
+            flex: 1,
+            marginRight: 8,
+            justifyContent: "center",
+          }}
+          onPress={() => handleToggleStatus(pitch)}
+          activeOpacity={0.8}
+        >
+          <Text
+            style={{
+              fontFamily: "Inter_500Medium",
+              fontSize: 14,
+              color: pitch.status === "available" ? "#000000" : isDark ? "#FFFFFF" : "#000000",
+            }}
+          >
+            {pitch.status === "available" ? "Active" : "Inactive"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Actions */}
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "#00FF88",
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            borderRadius: 12,
+            flex: 1,
+            marginRight: 8,
+            justifyContent: "center",
+          }}
+          onPress={() => console.log("Edit pitch:", pitch.id)}
+          activeOpacity={0.8}
+        >
+          <Edit3 size={16} color="#000000" />
+          <Text
+            style={{
+              fontFamily: "Inter_500Medium",
+              fontSize: 14,
+              color: "#000000",
+              marginLeft: 6,
+            }}
+          >
+            Edit
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "#3B82F6",
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            borderRadius: 12,
+            flex: 1,
+            justifyContent: "center",
+          }}
+          onPress={() => console.log("View analytics for pitch:", pitch.id)}
+          activeOpacity={0.8}
+        >
+          <BarChart3 size={16} color="#FFFFFF" />
+          <Text
+            style={{
+              fontFamily: "Inter_500Medium",
+              fontSize: 14,
+              color: "#FFFFFF",
+              marginLeft: 6,
+            }}
+          >
+            Analytics
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
+
+  // Calculate stats
+  const activePitches = pitches.filter(pitch => pitch.status === "available").length;
+  const totalPitches = pitches.length;
 
   return (
     <ScreenLayout>
@@ -350,70 +291,96 @@ export default function Pitches() {
               Manage your facilities
             </Text>
           </View>
+        </View>
 
-          {/* View Mode Toggle */}
+        {/* Stats Cards */}
+        <View style={{ paddingHorizontal: 20, marginBottom: 24, flexDirection: "row" }}>
           <View
             style={{
-              flexDirection: "row",
-              backgroundColor: isDark ? "#2C2C2C" : "#F3F4F6",
-              borderRadius: 12,
-              padding: 4,
+              backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
+              borderRadius: 16,
+              padding: 16,
+              flex: 1,
+              marginRight: 8,
+              shadowColor: isDark ? "#000" : "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 3,
             }}
           >
-            <TouchableOpacity
+            <Text
               style={{
-                backgroundColor:
-                  viewMode === "grid" ? "#00FF88" : "transparent",
-                padding: 8,
-                borderRadius: 8,
+                fontFamily: "Inter_600SemiBold",
+                fontSize: 16,
+                color: isDark ? "#FFFFFF" : "#000000",
+                marginBottom: 4,
               }}
-              onPress={() => setViewMode("grid")}
-              activeOpacity={0.7}
             >
-              <Grid3X3
-                size={20}
-                color={
-                  viewMode === "grid"
-                    ? "#FFFFFF"
-                    : isDark
-                      ? "#9CA3AF"
-                      : "#6B7280"
-                }
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
+              Active Pitches
+            </Text>
+            <Text
               style={{
-                backgroundColor:
-                  viewMode === "list" ? "#00FF88" : "transparent",
-                padding: 8,
-                borderRadius: 8,
+                fontFamily: "Inter_700Bold",
+                fontSize: 24,
+                color: "#00FF88",
               }}
-              onPress={() => setViewMode("list")}
-              activeOpacity={0.7}
             >
-              <List
-                size={20}
-                color={
-                  viewMode === "list"
-                    ? "#FFFFFF"
-                    : isDark
-                      ? "#9CA3AF"
-                      : "#6B7280"
-                }
-              />
-            </TouchableOpacity>
+              {activePitches}
+            </Text>
+          </View>
+          <View
+            style={{
+              backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
+              borderRadius: 16,
+              padding: 16,
+              flex: 1,
+              marginLeft: 8,
+              shadowColor: isDark ? "#000" : "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 3,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "Inter_600SemiBold",
+                fontSize: 16,
+                color: isDark ? "#FFFFFF" : "#000000",
+                marginBottom: 4,
+              }}
+            >
+              Total Pitches
+            </Text>
+            <Text
+              style={{
+                fontFamily: "Inter_700Bold",
+                fontSize: 24,
+                color: "#3B82F6",
+              }}
+            >
+              {totalPitches}
+            </Text>
           </View>
         </View>
 
         {/* Pitches List */}
         <View style={{ paddingHorizontal: 20 }}>
+          <Text
+            style={{
+              fontFamily: "Inter_600SemiBold",
+              fontSize: 20,
+              color: isDark ? "#FFFFFF" : "#000000",
+              marginBottom: 16,
+            }}
+          >
+            Pitches
+          </Text>
+          
           {pitches.length > 0 ? (
             pitches.map((pitch) => (
-              <PitchCard
-                key={pitch.id}
-                pitch={pitch}
-                compact={viewMode === "list"}
-              />
+              <PitchCard key={pitch.id} pitch={pitch} />
             ))
           ) : (
             <View style={{ alignItems: "center", paddingVertical: 60 }}>

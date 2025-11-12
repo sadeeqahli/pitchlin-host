@@ -25,10 +25,20 @@ export const usePitchStore = create((set, get) => ({
       id: 2,
       name: "Training Ground",
       type: "7-a-side",
-      status: "booked",
+      status: "inactive",
       hourlyRate: 35,
       location: "South Block",
       facilities: ["Floodlights", "Parking"],
+      image: null,
+    },
+    {
+      id: 3,
+      name: "Elite Pitch",
+      type: "11-a-side",
+      status: "available",
+      hourlyRate: 50,
+      location: "East Block",
+      facilities: ["Floodlights", "Changing Rooms", "Parking"],
       image: null,
     },
   ],
@@ -61,6 +71,18 @@ export const usePitchStore = create((set, get) => ({
       amount: 70,
       paymentStatus: "pending",
     },
+    {
+      id: 3,
+      pitchId: 3,
+      pitchName: "Elite Pitch",
+      customerName: "Premier League Academy",
+      date: new Date().toISOString().split("T")[0],
+      startTime: "15:00",
+      endTime: "17:00",
+      status: "confirmed",
+      amount: 100,
+      paymentStatus: "paid",
+    },
   ],
 
   // Payments data
@@ -85,21 +107,38 @@ export const usePitchStore = create((set, get) => ({
       customerName: "Football Club A",
       method: "cash",
     },
+    {
+      id: 3,
+      bookingId: 3,
+      amount: 100,
+      date: new Date().toISOString().split("T")[0],
+      status: "completed",
+      customerName: "Premier League Academy",
+      method: "card",
+    },
   ],
 
   // Recent activity
   recentActivity: [
     {
       id: 1,
+      bookingId: 3,
       type: "booking",
-      message: "New booking for Main Field",
+      message: "New booking for Elite Pitch",
       time: "2 hours ago",
+      amount: 100,
+      date: new Date().toISOString().split("T")[0],
+      customerName: "Premier League Academy",
     },
     {
       id: 2,
+      bookingId: 1,
       type: "payment",
       message: "Payment received from John Smith",
       time: "4 hours ago",
+      amount: 25,
+      date: new Date().toISOString().split("T")[0],
+      customerName: "John Smith",
     },
   ],
 
@@ -156,14 +195,30 @@ export const usePitchStore = create((set, get) => ({
       .filter(payment => payment.date === today && payment.status === "completed")
       .reduce((sum, payment) => sum + payment.amount, 0);
     
-    // Calculate total revenue
-    const totalRevenue = payments
-      .filter(payment => payment.status === "completed")
+    // Calculate weekly revenue (7 days)
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const weeklyRevenue = payments
+      .filter(payment => {
+        const paymentDate = new Date(payment.date);
+        return paymentDate >= oneWeekAgo && payment.status === "completed";
+      })
+      .reduce((sum, payment) => sum + payment.amount, 0);
+    
+    // Calculate monthly revenue (30 days)
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
+    const monthlyRevenue = payments
+      .filter(payment => {
+        const paymentDate = new Date(payment.date);
+        return paymentDate >= oneMonthAgo && payment.status === "completed";
+      })
       .reduce((sum, payment) => sum + payment.amount, 0);
     
     return {
       today: todayRevenue,
-      total: totalRevenue
+      weekly: weeklyRevenue,
+      monthly: monthlyRevenue
     };
   },
 }));

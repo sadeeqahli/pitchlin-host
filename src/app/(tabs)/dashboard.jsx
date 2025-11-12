@@ -325,7 +325,7 @@ export default function Dashboard() {
       style={{
         backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
         borderRadius: 16,
-        padding: 25,
+        padding: 30,
         flex: 1,
         marginHorizontal: 4,
         alignItems: "center",
@@ -424,14 +424,31 @@ export default function Dashboard() {
             Today's Overview
           </Text>
           
-          {/* Revenue Card - matches payments page */}
-          <RevenueCard
-            title="Total Revenue"
-            amount={revenueStats.today}
-            subtitle="Today's earnings"
-            color="#00FF88"
-            icon={DollarSign}
-          />
+          {/* Revenue Stats */}
+          <View style={{ paddingHorizontal: 16, marginBottom: 24 }}>
+            <RevenueCard
+              title="Today's Earnings"
+              amount={revenueStats.today}
+              subtitle=""
+              color="#00FF88"
+              icon={DollarSign}
+            />
+            
+            <View style={{ flexDirection: "row", marginHorizontal: -4 }}>
+              <StatCard
+                icon={TrendingUp}
+                label="Weekly Revenue"
+                value={`₦${(revenueStats.today * 7).toFixed(0)}`}
+                color="#3B82F6"
+              />
+              <StatCard
+                icon={TrendingUp}
+                label="Monthly Revenue"
+                value={`₦${(revenueStats.today * 30).toFixed(0)}`}
+                color="#8B5CF6"
+              />
+            </View>
+          </View>
           
           {/* Stats Cards - 2 in a row */}
           <View style={{ flexDirection: "row", paddingHorizontal: 16, marginHorizontal: -4 }}>
@@ -478,9 +495,12 @@ export default function Dashboard() {
               onPress={() => router.push("/(tabs)/bookings")}
               color="#3B82F6"
             />
+          </View>
+          <View style={{ flexDirection: "row", marginHorizontal: -4, marginTop: 12 }}>
             <QuickActionButton
               icon={Building2}
               title="Manage Pitches"
+              subtitle=""
               onPress={() => router.push("/(tabs)/pitches")}
               color="#8B5CF6"
             />

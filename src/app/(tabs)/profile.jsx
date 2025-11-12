@@ -33,12 +33,14 @@ import {
 } from "@expo-google-fonts/inter";
 import ScreenLayout from "@/components/ScreenLayout";
 import { usePitchStore } from "@/stores/pitchStore";
+import { useAuth } from "@/utils/auth/useAuth";
 
 export default function Profile() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+  const { signOut } = useAuth();
 
   const { pitches, bookings, payments } = usePitchStore();
 
@@ -81,8 +83,8 @@ export default function Profile() {
         text: "Sign Out",
         style: "destructive",
         onPress: () => {
-          console.log("Sign out");
-          // Handle sign out logic here
+          signOut();
+          router.replace("/(auth)/signin");
         },
       },
     ]);
@@ -419,8 +421,15 @@ export default function Profile() {
                 marginBottom: 16,
               }}
             >
-              Settings
+              Account Settings
             </Text>
+
+            <SettingsOption
+              icon={Lock}
+              title="Change Password"
+              description="Update your password"
+              onPress={() => console.log("Change password")}
+            />
 
             <SettingsOption
               icon={Settings}
@@ -434,13 +443,6 @@ export default function Profile() {
               title="Notifications"
               description="Manage alerts and reminders"
               onPress={() => console.log("Notifications")}
-            />
-
-            <SettingsOption
-              icon={Lock}
-              title="Privacy & Security"
-              description="Password and security settings"
-              onPress={() => console.log("Privacy & Security")}
             />
 
             <SettingsOption

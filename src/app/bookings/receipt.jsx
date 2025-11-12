@@ -399,6 +399,9 @@ export default function Receipt() {
                 For any inquiries, contact support@pitchlink.com
               </Text>
             </View>
+            
+            {/* Added vertical space as requested */}
+            <View style={{ height: 20 }} />
           </View>
         </View>
       </ScrollView>

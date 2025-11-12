@@ -155,7 +155,7 @@ export default function Bookings() {
   );
 
   const BookingCard = ({ booking }) => (
-    <View
+    <TouchableOpacity
       style={{
         backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
         borderRadius: 16,
@@ -167,6 +167,8 @@ export default function Bookings() {
         shadowRadius: 8,
         elevation: 3,
       }}
+      onPress={() => router.push(`/bookings/receipt/${booking.id}`)}
+      activeOpacity={0.7}
     >
       {/* Header Row */}
       <View
@@ -315,7 +317,10 @@ export default function Bookings() {
               borderRadius: 12,
               alignItems: "center",
             }}
-            onPress={() => handleBookingAction(booking, "confirm")}
+            onPress={(e) => {
+              e.stopPropagation();
+              handleBookingAction(booking, "confirm");
+            }}
             activeOpacity={0.8}
           >
             <Text
@@ -337,7 +342,10 @@ export default function Bookings() {
               borderRadius: 12,
               alignItems: "center",
             }}
-            onPress={() => handleBookingAction(booking, "cancel")}
+            onPress={(e) => {
+              e.stopPropagation();
+              handleBookingAction(booking, "cancel");
+            }}
             activeOpacity={0.8}
           >
             <Text
@@ -352,7 +360,7 @@ export default function Bookings() {
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </TouchableOpacity>
   );
 
   const getFilterCounts = () => {
@@ -393,7 +401,7 @@ export default function Bookings() {
                 marginBottom: 4,
               }}
             >
-              Bookings
+              Receipts
             </Text>
             <Text
               style={{
@@ -402,7 +410,7 @@ export default function Bookings() {
                 color: isDark ? "#9CA3AF" : "#6B7280",
               }}
             >
-              Manage your reservations
+              View booking details
             </Text>
           </View>
         </View>
@@ -445,7 +453,7 @@ export default function Bookings() {
                   textAlign: "center",
                 }}
               >
-                No bookings found
+                No receipts found
               </Text>
               <Text
                 style={{
