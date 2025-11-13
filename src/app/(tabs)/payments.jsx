@@ -82,26 +82,78 @@ export default function Payments() {
     return <CreditCard size={16} color={isDark ? "#9CA3AF" : "#6B7280"} />;
   };
 
-  // Calculate revenue analytics
-  const totalRevenue = payments.reduce(
-    (sum, payment) =>
-      payment.status === "completed" ? sum + payment.amount : sum,
-    0,
+  const filteredPayments = payments.filter((payment) => {
+    if (timeFilter === "all") return true;
+
+    const paymentDate = new Date(payment.date);
+    const now = new Date();
+    
+    // Normalize dates to start of day for consistent comparison
+    paymentDate.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+
+    switch (timeFilter) {
+      case "week":
+        // Get start of current week (Sunday)
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay());
+        return paymentDate >= startOfWeek && paymentDate <= now;
+        
+      case "month":
+        // Get start of current month
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        return paymentDate >= startOfMonth && paymentDate <= now;
+        
+      case "year":
+        // Get start of current year
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        return paymentDate >= startOfYear && paymentDate <= now;
+        
+      default:
+        return true;
+    }
+  });
+
+  // Calculate revenue analytics based on filtered payments
+  const filteredCompletedPayments = filteredPayments.filter(
+    (payment) => payment.status === "completed"
   );
 
-  const pendingRevenue = payments.reduce(
-    (sum, payment) =>
-      payment.status === "pending" ? sum + payment.amount : sum,
-    0,
+  const totalRevenue = filteredCompletedPayments.reduce(
+    (sum, payment) => sum + payment.amount,
+    0
   );
 
-  const thisMonthRevenue = payments
-    .filter((payment) => {
-      const paymentMonth = new Date(payment.date).getMonth();
-      const currentMonth = new Date().getMonth();
-      return paymentMonth === currentMonth && payment.status === "completed";
-    })
+  const pendingRevenue = filteredPayments
+    .filter((payment) => payment.status === "pending")
     .reduce((sum, payment) => sum + payment.amount, 0);
+
+  // Calculate this month revenue based on the filtered payments
+  const thisMonthRevenue = (() => {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    
+    return filteredCompletedPayments
+      .filter((payment) => {
+        const paymentDate = new Date(payment.date);
+        return (
+          paymentDate.getMonth() === currentMonth &&
+          paymentDate.getFullYear() === currentYear
+        );
+      })
+      .reduce((sum, payment) => sum + payment.amount, 0);
+  })();
+
+  // Quick stats based on filtered data
+  const totalTransactions = filteredPayments.length;
+  const completedPayments = filteredPayments.filter(
+    (p) => p.status === "completed"
+  ).length;
+  const averageTransaction =
+    completedPayments > 0
+      ? Math.round(totalRevenue / completedPayments) || 0
+      : 0;
 
   const RevenueCard = ({
     title,
@@ -201,7 +253,7 @@ export default function Payments() {
   );
 
   const PaymentCard = ({ payment }) => (
-    <View
+    <TouchableOpacity
       style={{
         backgroundColor: isDark ? "#1E1E1E" : "#FFFFFF",
         borderRadius: 16,
@@ -213,6 +265,8 @@ export default function Payments() {
         shadowRadius: 8,
         elevation: 3,
       }}
+      onPress={() => router.push(`/bookings/receipt/${payment.bookingId}`)}
+      activeOpacity={0.7}
     >
       <View
         style={{
@@ -320,31 +374,8 @@ export default function Payments() {
           {new Date(payment.date).toLocaleDateString()}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
-
-  const filteredPayments = payments.filter((payment) => {
-    if (timeFilter === "all") return true;
-
-    const paymentDate = new Date(payment.date);
-    const now = new Date();
-
-    switch (timeFilter) {
-      case "week":
-        const weekAgo = new Date();
-        weekAgo.setDate(now.getDate() - 7);
-        return paymentDate >= weekAgo;
-      case "month":
-        return (
-          paymentDate.getMonth() === now.getMonth() &&
-          paymentDate.getFullYear() === now.getFullYear()
-        );
-      case "year":
-        return paymentDate.getFullYear() === now.getFullYear();
-      default:
-        return true;
-    }
-  });
 
   return (
     <ScreenLayout>
@@ -415,7 +446,7 @@ export default function Payments() {
             <RevenueCard
               title="Total Revenue"
               amount={totalRevenue}
-              subtitle="All time earnings"
+              subtitle={`Earnings${timeFilter === 'all' ? '' : ` for selected ${timeFilter}`}`}
               color="#00FF88"
               icon={DollarSign}
             />
@@ -431,7 +462,7 @@ export default function Payments() {
             <RevenueCard
               title="Pending"
               amount={pendingRevenue}
-              subtitle="Awaiting payment"
+              subtitle={`Awaiting payment${timeFilter === 'all' ? '' : ` for selected ${timeFilter}`}`}
               color="#F59E0B"
               icon={Clock}
             />
@@ -546,7 +577,7 @@ export default function Payments() {
                   color: isDark ? "#FFFFFF" : "#000000",
                 }}
               >
-                {payments.length}
+                {totalTransactions}
               </Text>
             </View>
 
@@ -573,7 +604,7 @@ export default function Payments() {
                   color: "#00FF88",
                 }}
               >
-                {payments.filter((p) => p.status === "completed").length}
+                {completedPayments}
               </Text>
             </View>
 
@@ -596,13 +627,7 @@ export default function Payments() {
                   color: isDark ? "#FFFFFF" : "#000000",
                 }}
               >
-                ₦
-                {payments.length > 0
-                  ? Math.round(
-                      totalRevenue /
-                        payments.filter((p) => p.status === "completed").length,
-                    ) || 0
-                  : 0}
+                ₦{averageTransaction}
               </Text>
             </View>
           </View>
